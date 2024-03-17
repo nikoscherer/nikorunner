@@ -1,0 +1,15 @@
+.root {
+    -fx-background-color: #32354C;
+}
+
+.label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20pt;
+}
+
+.button-create {
+    -fx-font-size: 10pt;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #25263D;
+    -fx-background-radius: 4;
+}
