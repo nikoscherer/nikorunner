@@ -1,0 +1,84 @@
+.root {
+    -fx-background-color: #29292C;
+}
+
+
+
+/* Paths and Autos (Type) */
+.border-menuType {
+    -fx-background-color: #27272a;
+    -fx-background-radius: 42px;
+    -fx-border-width: 3px;
+    -fx-border-radius: 40px;
+}
+.label-menuType {
+    -fx-alignment: center;
+    -fx-text-fill: #d9d9d9;
+    -fx-font-size: 20pt;
+}
+.button-menuCreateType {
+    -fx-background-radius: 12px;
+
+    -fx-border-width: 3px;
+    -fx-border-radius: 10px;
+
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20;
+}
+
+
+.label-type {
+    -fx-background-color: null;
+    -fx-background-radius: 10px;
+    -fx-border-color: #2a2a2b;
+    -fx-border-width: 3px;
+    -fx-border-radius: 10px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+}
+.border-type {
+    -fx-background-color: #27272a;
+    -fx-background-radius: 22;
+
+    -fx-border-width: 5px;
+    -fx-border-radius: 20;
+}
+.button-menuType {
+    -fx-background-color: null;
+    -fx-border-color: #2a2a2a;
+    -fx-border-width: 3px;
+    -fx-border-radius: 10px;
+
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15;
+}
+.button-openType {
+    -fx-text-fill: #d1d1d1;
+    -fx-font-size: 15pt;
+}
+
+
+/* Basic */
+.background-color {
+    -fx-background-color: #292929;
+}
+.border-color {
+    -fx-border-color: #222223;
+}
+
+
+.button-color {
+    -fx-background-color: #242427;
+    -fx-border-color: #222223;
+}
+.button-color:hover {
+    -fx-background-color: #313135;
+}
+
+
+
+/* EDITING */
+.editing {
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 2px;
+}

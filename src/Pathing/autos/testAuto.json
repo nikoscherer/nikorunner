@@ -1,0 +1,12 @@
+{
+    "startingPose": {
+        "position": {
+            "x": 0,
+            "y": 0
+        },
+        "rotation": 0
+    },
+    "paths": {
+        "name": "testPath.json"
+    }
+}

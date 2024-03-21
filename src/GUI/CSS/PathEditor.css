@@ -1,0 +1,60 @@
+.root {
+    -fx-background-color: #29292C;
+}
+
+/* Pathing Canvas */
+.canvas-editing {
+    /* -fx-background-color: #ffffff; */
+}
+
+
+/* Menu Bar */
+.border-fullMenu {
+    -fx-background-color: #242427;
+
+    -fx-border-color: #191919;
+}
+.border-menu {
+    -fx-background-radius: 22;
+
+    -fx-border-width: 3px;
+    -fx-border-radius: 20;
+}
+
+.label-menu {
+    -fx-text-fill: #d9d9d9;
+    -fx-font-size: 15pt;
+}
+
+
+/* Basic */
+.background-color {
+    -fx-background-color: #292929;
+}
+.border-color {
+    -fx-border-color: #222223;
+}
+
+
+.button-color {
+    -fx-background-color: #242427;
+    -fx-border-color: #222223;
+}
+.button-color:hover {
+    -fx-background-color: #313135;
+}
+
+
+
+/* EDITING */
+.editing {
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 2px;
+}
+
+
+
+/* Color TESTING */
+.testing-color {
+    -fx-background-color: rgb(255, 71, 83);
+}

@@ -1,0 +1,32 @@
+{
+    "startingPose": {
+        "location": {
+            "x": 0,
+            "y": 0
+        },
+        "rotation": 0
+    },
+    "waypoints": [
+        {
+            "start": {
+                "x": 0,
+                "y": 0
+            },
+            "startTangent": {
+                "x": 5,
+                "y": 0
+            },
+            "endTangent": {
+                "x": 10,
+                "y": 5
+            },
+            "end": {
+                "x": 15,
+                "y": 5
+            }
+        }
+    ],
+    "commands": [
+
+    ]
+}
