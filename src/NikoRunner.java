@@ -28,14 +28,10 @@ public class NikoRunner extends Application  {
         window.initStyle(StageStyle.UNDECORATED);
         
         Menu.init(window);
-        PathEditorOLD.init(window);
         PathEditor.init(window);
         
         // window.setScene(Menu.menu);
         window.setScene(PathEditor.editor);
-
-        /* TESTING */
-
 
         window.show();
     }

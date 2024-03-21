@@ -30,8 +30,8 @@ public class PathEditor {
     static ArrayList<Spline> splines;
 
     // Pathing
-    // index, point (p0-p3)
-    static int[] selected = {0, 0, 0};
+    // selected, index, point (p0-p3), if pose then heading
+    static int[] selected = {0, 0, 0, 0};
     static Point2d offset = new Point2d(0, 0);
 
 
@@ -101,8 +101,8 @@ public class PathEditor {
         // PATHING
 
         // Field Relative
-        Pose2d defaultStartPose = new Pose2d(-12, -18, 0);
-        Pose2d defaultEndPose = new Pose2d(12, 18, 0);
+        Pose2d defaultStartPose = new Pose2d(-12, -18, Math.toRadians(0));
+        Pose2d defaultEndPose = new Pose2d(12, 18, Math.toRadians(0));
 
         // Off of poses
         Vector2d defaultFirstControl = new Vector2d(10, Math.toRadians(90));
@@ -130,22 +130,41 @@ public class PathEditor {
                     for (int i = 0; i < splines.size(); i++) {
 
                         Point2d startPoseDifference = fieldRelativeCursor.toVector2d().minus(splines.get(i).getStartPose().getVector2d()).toPoint2d();
+                        Point2d startPoseHeadingDifference = fieldRelativeCursor.toVector2d().minus(getHeading(splines.get(i).getStartPose(), gc).toVector2d()).toPoint2d();
                         Point2d firstControlDifference = relateTo(splines.get(i).getStartPose().getPoint2d(), splines.get(i).getFirstControl()).toVector2d().minus(fieldRelativeCursor.toVector2d()).toPoint2d();
                         Point2d secondControlDifference = relateTo(splines.get(i).getEndPose().getPoint2d(), splines.get(i).getSecondControl()).toVector2d().minus(fieldRelativeCursor.toVector2d()).toPoint2d();
+                        Point2d endPoseHeadingDifference = fieldRelativeCursor.toVector2d().minus(getHeading(splines.get(i).getEndPose(), gc).toVector2d()).toPoint2d();
                         Point2d endPoseDifference = fieldRelativeCursor.toVector2d().minus(splines.get(i).getEndPose().getVector2d()).toPoint2d();
 
                         if(inRange(startPoseDifference, (robotPointSize - 5) / pixelPerIn)) {
-                            System.out.println("Start Pose");
-                            setSelected(1, i, 0);
+                            setSelected(1, i, 0, 0);
                         } else if (inRange(firstControlDifference, controlPointSize / pixelPerIn)) {
-                            System.out.println("First Control");
-                            setSelected(1, i, 1);
+                            setSelected(1, i, 1, 0);
                         } else if (inRange(secondControlDifference, controlPointSize / pixelPerIn)) {
-                            System.out.println("Second Control");
-                            setSelected(1, i, 2);
+                            setSelected(1, i, 2, 0);
                         } else if (inRange(endPoseDifference, (robotPointSize - 5) / pixelPerIn)) {
-                            System.out.println("End Pose");
-                            setSelected(1, i, 3);
+                            setSelected(1, i, 3, 0);
+                        }
+                        
+                        if(i == 0 && splines.size() == 1) {
+                            System.out.println("one spline");
+                            if(inRange(startPoseHeadingDifference, (robotPointSize - 5) / pixelPerIn)) {
+                                System.out.println("start heading");
+                                setSelected(1, i, 0, 1);
+                            } else if(inRange(endPoseHeadingDifference, (robotPointSize - 5) / pixelPerIn)) {
+                                System.out.println("end heading");
+                                setSelected(1, i, 0, 1);
+                            }
+                        } else if(i == 0){
+                            if(inRange(startPoseHeadingDifference, (robotPointSize - 5) / pixelPerIn)) {
+                                System.out.println("start heading");
+                                setSelected(1, i, 0, 1);
+                            }
+                        } else if (i == splines.size() - 1) {
+                            if(inRange(endPoseHeadingDifference, (robotPointSize - 5) / pixelPerIn)) {
+                                System.out.println("end heading");
+                                setSelected(1, i, 0, 1);
+                            }
                         }
 
                         offset = fieldRelativeCursor;
@@ -174,7 +193,6 @@ public class PathEditor {
                 }
             }
             redrawPath(gc);
-            System.out.println("redrew");
         });
 
         pathingCanvas.setOnMouseDragged(e -> {
@@ -215,30 +233,28 @@ public class PathEditor {
         });
 
         pathingCanvas.setOnMouseReleased(e -> {
-            setSelected(0, 0, 0);
+            setSelected(0, 0, 0, 0);
         });
     }
 
     public static void deleteSpline(int index) {
-        // if(splines != 0) {
-        //     splines.get(index + 1).setStartPose(splines.get(index - 1).getEndPose());
-        //     splines.get(index - 1).setEndPose(splines.get(index + 1).getStartPose());
-        // }
-        if(index > 1) {
+        System.out.println(index);
+
+        if(index != 0 && splines.size() != 2) {
             splines.get(index + 1).setStartPose(splines.get(index - 1).getEndPose());
             splines.get(index - 1).setEndPose(splines.get(index + 1).getStartPose());
-        } else if (index == 1) {
-            splines.get(index - 1).setEndPose(splines.get(index + 1).getStartPose());
+            splines.get(index + 1).setFirstControl(new Vector2d(splines.get(index - 1).getSecondControl().getMagnitude(), Util.getOppositeAngle(splines.get(index - 1).getSecondControl().getDirection())));
+            splines.get(index - 1).setSecondControl(new Vector2d(splines.get(index + 1).getFirstControl().getMagnitude(), Util.getOppositeAngle(splines.get(index - 1).getFirstControl().getDirection())));
         }
-        System.out.println(index);
 
         splines.remove(index);
     }
 
-    public static void setSelected(int a, int b, int c) {
+    public static void setSelected(int a, int b, int c, int d) {
         selected[0] = a;
         selected[1] = b;
         selected[2] = c;
+        selected[3] = d;
     }
 
     public static void redrawPath(GraphicsContext gc) {
@@ -248,8 +264,6 @@ public class PathEditor {
 
         for (int i = 0; i < splines.size(); i++) {
             drawSpline(gc, splines.get(i));
-
-            
         }
 
         for (int i = 0; i < splines.size(); i++) {
@@ -273,6 +287,30 @@ public class PathEditor {
         }
     }
 
+    // Rotating is wrong, may be from when called
+    public static Point2d getHeading(Pose2d pose, GraphicsContext gc) {
+        Point2d topLeft = new Point2d(pose.getX() - ((robotSize[0] * pixelPerIn) / 2), pose.getY() - ((robotSize[1] * pixelPerIn) / 2));
+        Point2d topRight = new Point2d(pose.getX() + ((robotSize[0] * pixelPerIn) / 2), pose.getY() - ((robotSize[1] * pixelPerIn) / 2));
+
+        Point2d topLeftRotated = new Point2d(
+            pose.getX() + (topLeft.getX() - pose.getX()) * Math.cos(pose.getHeading()) - (topLeft.getY() - pose.getY()) * Math.sin(pose.getHeading()), 
+            pose.getY() + (topLeft.getX() - pose.getX()) * Math.sin(pose.getHeading()) + (topLeft.getY() - pose.getY()) * Math.cos(pose.getHeading())
+        );
+
+        Point2d topRightRotated = new Point2d(
+            pose.getX() + (topRight.getX() - pose.getX()) * Math.cos(pose.getHeading()) - (topRight.getY() - pose.getY()) * Math.sin(pose.getHeading()), 
+            pose.getY() + (topRight.getX() - pose.getX()) * Math.sin(pose.getHeading()) + (topRight.getY() - pose.getY()) * Math.cos(pose.getHeading())
+        );
+
+        System.out.println(Util.vectorLerp(topLeftRotated.toVector2d(), topRightRotated.toVector2d(), .5).getX());
+        System.out.println(Util.vectorLerp(topLeftRotated.toVector2d(), topRightRotated.toVector2d(), .5).getY());
+        System.out.println("ran");
+        gc.setStroke(Color.rgb(0, 0, 0));
+        gc.setLineWidth(3);
+        drawPoint(gc, convertToPixels(orientateToCanvas(Util.vectorLerp(topLeftRotated.toVector2d(), topRightRotated.toVector2d(), .5).toPoint2d())), robotPointSize);
+        return Util.vectorLerp(topLeftRotated.toVector2d(), topRightRotated.toVector2d(), .5).toPoint2d();
+    }
+
     public static void drawRobot(GraphicsContext gc, Pose2d pose, Vector2d controlPoint, boolean startPose) {
         Point2d updatedPoint = orientateToCanvas(pose.getPoint2d());
         Point2d pointInPixels = updatedPoint.toVector2d().times(pixelPerIn).toPoint2d();
@@ -286,8 +324,33 @@ public class PathEditor {
         gc.setLineWidth(3);
         gc.setFill(Color.TRANSPARENT);
 
-        Point2d topLeftInPixels = new Point2d(pointInPixels.getX() - ((robotSize[0] * pixelPerIn) / 2), pointInPixels.getY() - ((robotSize[0] * pixelPerIn) / 2));
-        gc.strokeRect(topLeftInPixels.getX(), topLeftInPixels.getY(), robotSize[0] * pixelPerIn, robotSize[1] * pixelPerIn);
+        Point2d topLeftInPixels = new Point2d(pointInPixels.getX() - ((robotSize[0] * pixelPerIn) / 2), pointInPixels.getY() - ((robotSize[1] * pixelPerIn) / 2));
+        Point2d topRightInPixels = new Point2d(pointInPixels.getX() + ((robotSize[0] * pixelPerIn) / 2), pointInPixels.getY() - ((robotSize[1] * pixelPerIn) / 2));
+        Point2d bottomLeftInPixels = new Point2d(pointInPixels.getX() - ((robotSize[0] * pixelPerIn) / 2), pointInPixels.getY() + ((robotSize[1] * pixelPerIn) / 2));
+        Point2d bottomRightInPixels = new Point2d(pointInPixels.getX() + ((robotSize[0] * pixelPerIn) / 2), pointInPixels.getY() + ((robotSize[1] * pixelPerIn) / 2));
+
+        // Rotate Points (sin and cos may be reversed).
+        Point2d topLeftInPixelsRotated = new Point2d(
+            pointInPixels.getX() + (topLeftInPixels.getX() - pointInPixels.getX()) * Math.cos(pose.getHeading()) - (topLeftInPixels.getY() - pointInPixels.getY()) * Math.sin(pose.getHeading()), 
+            pointInPixels.getY() + (topLeftInPixels.getX() - pointInPixels.getX()) * Math.sin(pose.getHeading()) + (topLeftInPixels.getY() - pointInPixels.getY()) * Math.cos(pose.getHeading())
+        );
+        Point2d topRightInPixelsRotated = new Point2d(
+            pointInPixels.getX() + (topRightInPixels.getX() - pointInPixels.getX()) * Math.cos(pose.getHeading()) - (topRightInPixels.getY() - pointInPixels.getY()) * Math.sin(pose.getHeading()), 
+            pointInPixels.getY() + (topRightInPixels.getX() - pointInPixels.getX()) * Math.sin(pose.getHeading()) + (topRightInPixels.getY() - pointInPixels.getY()) * Math.cos(pose.getHeading())
+        );
+        Point2d bottomLeftInPixelsRotated = new Point2d(
+            pointInPixels.getX() + (bottomLeftInPixels.getX() - pointInPixels.getX()) * Math.cos(pose.getHeading()) - (bottomLeftInPixels.getY() - pointInPixels.getY()) * Math.sin(pose.getHeading()), 
+            pointInPixels.getY() + (bottomLeftInPixels.getX() - pointInPixels.getX()) * Math.sin(pose.getHeading()) + (bottomLeftInPixels.getY() - pointInPixels.getY()) * Math.cos(pose.getHeading())
+        );
+        Point2d bottomRightInPixelsRotated = new Point2d(
+            pointInPixels.getX() + (bottomRightInPixels.getX() - pointInPixels.getX()) * Math.cos(pose.getHeading()) - (bottomRightInPixels.getY() - pointInPixels.getY()) * Math.sin(pose.getHeading()), 
+            pointInPixels.getY() + (bottomRightInPixels.getX() - pointInPixels.getX()) * Math.sin(pose.getHeading()) + (bottomRightInPixels.getY() - pointInPixels.getY()) * Math.cos(pose.getHeading())
+        );
+
+        gc.strokeLine(topLeftInPixelsRotated.getX(), topLeftInPixelsRotated.getY(), topRightInPixelsRotated.getX(), topRightInPixelsRotated.getY());
+        gc.strokeLine(topRightInPixelsRotated.getX(), topRightInPixelsRotated.getY(), bottomRightInPixelsRotated.getX(), bottomRightInPixelsRotated.getY());
+        gc.strokeLine(bottomRightInPixelsRotated.getX(), bottomRightInPixelsRotated.getY(), bottomLeftInPixelsRotated.getX(), bottomLeftInPixelsRotated.getY());
+        gc.strokeLine(bottomLeftInPixelsRotated.getX(), bottomLeftInPixelsRotated.getY(), topLeftInPixelsRotated.getX(), topLeftInPixelsRotated.getY());
 
         // Draw Control to Center
         Point2d relatedPointInPixels = convertToPixels(orientateToCanvas(relateTo(pose.getPoint2d(), controlPoint)));
@@ -299,6 +362,20 @@ public class PathEditor {
         gc.lineTo(relatedPointInPixels.getX(), relatedPointInPixels.getY());
         gc.stroke();
         gc.closePath();
+
+        // Draw Heading
+        gc.setStroke(Color.rgb(0, 0, 0));
+        gc.setLineWidth(3);
+        if(startPose) {
+            gc.setFill(Color.rgb(31, 215, 43));
+        } else {
+            gc.setFill(Color.rgb(255, 71, 83));
+        }
+        Point2d heading = Util.vectorLerp(topLeftInPixelsRotated.toVector2d(), topRightInPixelsRotated.toVector2d(), .5).toPoint2d();
+        // linear lerp?
+        // Point2d heading = convertToPixels(orientateToCanvas(pose.getPoint2d()));
+        // heading = new Point2d(heading.getX() + (Math.sin(pose.getHeading()) * ((robotSize[0] * pixelPerIn) / 2)), heading.getY() - (Math.cos(pose.getHeading()) * (robotSize[1] * pixelPerIn) / 2));
+        drawPoint(gc, heading, controlPointSize - 5);
 
         // Draw Robot Center
         gc.setStroke(Color.rgb(0, 0, 0));
@@ -401,10 +478,4 @@ public class PathEditor {
     public static Point2d convertToPixels(Point2d inches) {
         return inches.toVector2d().times(pixelPerIn).toPoint2d();
     }
-
-
-    /* TESTING */
-
-
-
 }
