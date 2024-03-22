@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -32,8 +33,6 @@ public class General {
 
         menu.setAlignment(Pos.CENTER_LEFT);
         menu.setPrefSize(window.getWidth(), 60);
-        menu.setMaxSize(window.getWidth(), 60);
-        menu.setMinSize(window.getWidth(), 60);
         menu.setPadding(new Insets(10, 25, 10, 25));
 
         menu.setSpacing(0);
@@ -54,6 +53,7 @@ public class General {
 
 
         Rectangle seperator = new Rectangle(1010, 20);
+        seperator.widthProperty().bind(window.widthProperty().subtract(390));
         seperator.setFill(Color.TRANSPARENT);
         
         int appSize = 40;
@@ -140,13 +140,17 @@ public class General {
         menuLine.setStartY(60);
         menuLine.setEndX(window.getWidth());
         menuLine.setEndY(60);
+        menuLine.endXProperty().bind(window.widthProperty());
         menuLine.getStyleClass().addAll("line-menu");
+
+
+        HBox.setHgrow(menu, Priority.ALWAYS);
+        HBox.setHgrow(seperator, Priority.ALWAYS);
 
         menu.getChildren().addAll(menuButton, labelSeperator, menuLabel, seperator, minimizeApplicationButton, maximizeApplicationButton, closeApplicationButton);
         root.getChildren().addAll(menu, menuLine);
 
         menu.getStylesheets().addAll("imgs/WindowMenu.css");
-        // root.getStylesheets().addAll("GUI/CSS/NEW.css");
 
         return root;
     }

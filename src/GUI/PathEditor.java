@@ -12,6 +12,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -38,17 +40,21 @@ public class PathEditor {
     
     // Constants (MOVE SOME TO CONSTANTS LATER)
     public static final Vector2d fieldCenter = new Point2d(72, 72).toVector2d();
-    static final int[] robotSize = {15, 15};
+    static final int[] robotSize = {16, 16};
 
     // Waypoint Sizes
     static final int robotPointSize = 22; // pixels
     static final int controlPointSize = 18; // pixels
 
 
-    static final double pixelPerIn = 4.861111;
+
 
     // Canvas size
-    static final int size = 700;
+    static int size = 700;
+
+    //4.8611111
+    static double pixelPerIn = (double) (size / 144.0);
+
     static final Image centerstage = new Image("imgs/Fields/Centerstage.png", size, size, true, true);
 
 
@@ -65,11 +71,11 @@ public class PathEditor {
         VBox sideMenu = new VBox();
         sideMenu.setPadding(new Insets(10, 5, 0, 5));
         sideMenu.setSpacing(15);
-        sideMenu.setPrefSize(500, 0);
+        sideMenu.setPrefSize(650, 0);
         sideMenu.getStyleClass().addAll("border-fullMenu");
 
         VBox waypointsMenu = new VBox();
-        waypointsMenu.setPrefSize(460, 75);
+        waypointsMenu.setPrefSize(500, 75);
         waypointsMenu.getStyleClass().addAll("border-color", "border-menu");
         Label waypointsLabel = new Label("Waypoints");
         waypointsLabel.setPadding(new Insets(0, 0, 0, 15));
@@ -80,14 +86,30 @@ public class PathEditor {
         sideMenu.getChildren().addAll(waypointsMenu);
 
 
-        GridPane pathing = new GridPane();
-        pathing.setAlignment(Pos.CENTER);
-        pathing.setPrefSize(size, size);
+        StackPane pathing = new StackPane();
+        // pathing.setAlignment(Pos.CENTER);
+        pathing.getStyleClass().addAll("editing");
         Canvas pathingCanvas = new Canvas(size, size);
         GraphicsContext gc = pathingCanvas.getGraphicsContext2D();
 
+
+        window.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            size = size + (int) ((newHeight.intValue() - oldHeight.intValue()) * (double) (1 + 7/8));
+            waypointsMenu.setPrefHeight(waypointsMenu.getWidth() + size);
+            pathingCanvas.setWidth(size);
+            pathingCanvas.setHeight(size);
+            pixelPerIn = (double) (size / 144.0);
+            redrawPath(gc);
+        });
+
+        window.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            waypointsMenu.setPrefWidth(waypointsMenu.getWidth() + ((newWidth.intValue() - oldWidth.intValue()) / 8));
+            waypointsMenu.setMinWidth(waypointsMenu.getWidth() + ((newWidth.intValue() - oldWidth.intValue()) / 8));
+        });
+
+
         gc.drawImage(centerstage, 0, 0);
-        pathing.add(pathingCanvas, 0, 0);
+        pathing.getChildren().addAll(pathingCanvas);
 
 
         root.setTop(General.createMenu(primaryStage));
@@ -147,22 +169,17 @@ public class PathEditor {
                         }
                         
                         if(i == 0 && splines.size() == 1) {
-                            System.out.println("one spline");
                             if(inRange(startPoseHeadingDifference, (robotPointSize - 5) / pixelPerIn)) {
-                                System.out.println("start heading");
                                 setSelected(1, i, 0, 1);
                             } else if(inRange(endPoseHeadingDifference, (robotPointSize - 5) / pixelPerIn)) {
-                                System.out.println("end heading");
                                 setSelected(1, i, 0, 1);
                             }
                         } else if(i == 0){
                             if(inRange(startPoseHeadingDifference, (robotPointSize - 5) / pixelPerIn)) {
-                                System.out.println("start heading");
                                 setSelected(1, i, 0, 1);
                             }
                         } else if (i == splines.size() - 1) {
                             if(inRange(endPoseHeadingDifference, (robotPointSize - 5) / pixelPerIn)) {
-                                System.out.println("end heading");
                                 setSelected(1, i, 0, 1);
                             }
                         }
@@ -238,7 +255,6 @@ public class PathEditor {
     }
 
     public static void deleteSpline(int index) {
-        System.out.println(index);
 
         if(index != 0 && splines.size() != 2) {
             splines.get(index + 1).setStartPose(splines.get(index - 1).getEndPose());
@@ -260,7 +276,7 @@ public class PathEditor {
     public static void redrawPath(GraphicsContext gc) {
         gc.clearRect(0, 0, size, size);
 
-        gc.drawImage(centerstage, 0, 0);
+        gc.drawImage(centerstage, 0, 0, size, size);
 
         for (int i = 0; i < splines.size(); i++) {
             drawSpline(gc, splines.get(i));
@@ -301,10 +317,7 @@ public class PathEditor {
             pose.getX() + (topRight.getX() - pose.getX()) * Math.cos(pose.getHeading()) - (topRight.getY() - pose.getY()) * Math.sin(pose.getHeading()), 
             pose.getY() + (topRight.getX() - pose.getX()) * Math.sin(pose.getHeading()) + (topRight.getY() - pose.getY()) * Math.cos(pose.getHeading())
         );
-
-        System.out.println(Util.vectorLerp(topLeftRotated.toVector2d(), topRightRotated.toVector2d(), .5).getX());
-        System.out.println(Util.vectorLerp(topLeftRotated.toVector2d(), topRightRotated.toVector2d(), .5).getY());
-        System.out.println("ran");
+        
         gc.setStroke(Color.rgb(0, 0, 0));
         gc.setLineWidth(3);
         drawPoint(gc, convertToPixels(orientateToCanvas(Util.vectorLerp(topLeftRotated.toVector2d(), topRightRotated.toVector2d(), .5).toPoint2d())), robotPointSize);

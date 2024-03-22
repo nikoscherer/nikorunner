@@ -3,6 +3,8 @@ package GUI;
 import java.io.File;
 import java.io.IOException;
 
+import org.json.simple.JSONObject;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -26,9 +29,13 @@ public class Menu {
 
     public static Scene menu;
 
+    public static HBox pathContent;
 
-    public static GridPane paths;
+    static double xOffset;
+    static double yOffset;
 
+
+    // Should redo at some point
     public static void init(Stage primaryStage) {
         window = primaryStage;
 
@@ -66,17 +73,17 @@ public class Menu {
         pathSeperator.setTranslateY(10); // MIGHT CAUSE ISSUES 
         pathSeperator.setStroke(Color.rgb(20, 20, 20));
 
-        paths = new GridPane();
-        paths.setAlignment(Pos.CENTER_LEFT);
-        paths.setPadding(new Insets(0, 0, 0, 0));
-        paths.setHgap(10);
-        paths.setVgap(10);
-        paths.setPrefSize(window.getWidth(), 250);
-        // paths.getStyleClass().addAll("editing");
+        ScrollPane paths = new ScrollPane();
+        // paths.prefWidthProperty().bind(window.widthProperty());
+        paths.setFitToWidth(true);
+        paths.setPrefHeight(300);
+        pathContent = new HBox();
+        pathContent.setAlignment(Pos.CENTER_LEFT);  
+        pathContent.setPadding(new Insets(20, 0, 0, 10));
+        pathContent.setSpacing(10);
+        pathContent.setPrefSize(window.getWidth(), 250);
 
         int maxRow = 5;
-
-
 
         addPath.setOnAction(e -> {
             String name = "New_Path.json";
@@ -91,7 +98,16 @@ public class Menu {
 
             try {
                 if(newPath.createNewFile()) {
+                    // Write Basic Code
+                    JSONObject jsonFile = new JSONObject();
+
                     updatePathingGUI();
+                    // jsonFile.put("key", 1);
+                    // jsonFile.put("key", 2);
+                    // jsonFile.put("key", 3);
+
+                    // FileWriter writeFile = new FileWriter(newPath.getAbsolutePath());
+                    // writeFile.write(jsonFile.toJSONString());
                 } else {
                     System.out.println("auto already exists");
                 }
@@ -104,14 +120,16 @@ public class Menu {
         
         updatePathingGUI();
         
+        paths.setContent(pathContent);
         path.getChildren().addAll(pathTop, pathSeperator, paths);
 
 
 
         grid.add(path, 0, 0);
 
+        VBox topMenu = General.createMenu(window);
 
-        root.setTop(General.createMenu(window));
+        root.setTop(topMenu);
         root.setCenter(grid);
         menu = new Scene(root, window.getWidth(), window.getHeight());
 
@@ -122,7 +140,7 @@ public class Menu {
     static String oldName = null;
 
     public static void updatePathingGUI() {
-        paths.getChildren().clear();
+        pathContent.getChildren().clear();
 
         for(int i = 0; i < getFileCount(Constants.pathDir); i++) {
 
@@ -161,7 +179,7 @@ public class Menu {
             pathBox.setTop(topPanel);
             pathBox.setCenter(openPath);
 
-            paths.add(pathBox, i, 0);
+            pathContent.getChildren().add(pathBox);
 
             pathName.textProperty().addListener((observable, oldValue, newValue) -> {
                 if(oldName == null) {
@@ -200,7 +218,6 @@ public class Menu {
                 file.delete();
                 updatePathingGUI();
             });
-
         }
     }
 

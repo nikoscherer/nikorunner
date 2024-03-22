@@ -4,10 +4,12 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+
 public class NikoRunner extends Application  {
 
 
     public static int[] defaultSize = {1400, 800};
+
 
     Stage window;
 
@@ -25,13 +27,13 @@ public class NikoRunner extends Application  {
         window.setHeight(Constants.defaultSize[1]);
         window.setResizable(true);
 
-        window.initStyle(StageStyle.UNDECORATED);
+        window.initStyle(StageStyle.TRANSPARENT);
         
         Menu.init(window);
         PathEditor.init(window);
         
-        // window.setScene(Menu.menu);
-        window.setScene(PathEditor.editor);
+        window.setScene(Menu.menu);
+        // window.setScene(PathEditor.editor);
 
         window.show();
     }
