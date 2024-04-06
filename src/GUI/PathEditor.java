@@ -1,9 +1,13 @@
 package GUI;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import org.json.simple.parser.ParseException;
+
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,8 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -22,6 +24,7 @@ import nikorunnerlib.src.Geometry.Pose2d;
 import nikorunnerlib.src.Geometry.Vector2d;
 import nikorunnerlib.src.Other.Util;
 
+// Might be better to have it non static
 public class PathEditor {
     
     static Stage window;
@@ -40,7 +43,7 @@ public class PathEditor {
     
     // Constants (MOVE SOME TO CONSTANTS LATER)
     public static final Vector2d fieldCenter = new Point2d(72, 72).toVector2d();
-    static final int[] robotSize = {16, 16};
+    static final double[] robotSize = {16, 16};
 
     // Waypoint Sizes
     static final int robotPointSize = 22; // pixels
@@ -58,10 +61,11 @@ public class PathEditor {
     static final Image centerstage = new Image("imgs/Fields/Centerstage.png", size, size, true, true);
 
 
+    static File file;
 
-
-    public static void init(Stage primaryStage) {
+    public static void init(Stage primaryStage, File pathFile) throws FileNotFoundException, IOException, ParseException {
         window = primaryStage;
+        file = pathFile;
 
         splines = new ArrayList<>();
 
@@ -87,12 +91,10 @@ public class PathEditor {
 
 
         StackPane pathing = new StackPane();
-        // pathing.setAlignment(Pos.CENTER);
-        pathing.getStyleClass().addAll("editing");
         Canvas pathingCanvas = new Canvas(size, size);
         GraphicsContext gc = pathingCanvas.getGraphicsContext2D();
 
-
+        // TODO When resizing, it depends on if fullscreened before opening a path?
         window.heightProperty().addListener((obs, oldHeight, newHeight) -> {
             size = size + (int) ((newHeight.intValue() - oldHeight.intValue()) * (double) (1 + 7/8));
             waypointsMenu.setPrefHeight(waypointsMenu.getWidth() + size);
@@ -122,15 +124,21 @@ public class PathEditor {
 
         // PATHING
 
-        // Field Relative
-        Pose2d defaultStartPose = new Pose2d(-12, -18, Math.toRadians(0));
-        Pose2d defaultEndPose = new Pose2d(12, 18, Math.toRadians(0));
+        if(!(pathFile == null)) {
+            splines = PathingJson.convertToPath(pathFile);
+        } else {
+            // Field Relative
+            Pose2d defaultStartPose = new Pose2d(-12, -18, Math.toRadians(0));
+            Pose2d defaultEndPose = new Pose2d(12, 18, Math.toRadians(0));
 
-        // Off of poses
-        Vector2d defaultFirstControl = new Vector2d(10, Math.toRadians(90));
-        Vector2d defaultSecondControl = new Vector2d(10, Math.toRadians(-90));
+            // Off of poses
+            Vector2d defaultFirstControl = new Vector2d(10, Math.toRadians(90));
+            Vector2d defaultSecondControl = new Vector2d(10, Math.toRadians(-90));
 
-        splines.add(new Spline(defaultStartPose, defaultFirstControl, defaultSecondControl, defaultEndPose));
+            splines.add(new Spline(defaultStartPose, defaultFirstControl, defaultSecondControl, defaultEndPose));
+        }
+
+        
         redrawPath(gc);
 
 
@@ -223,11 +231,9 @@ public class PathEditor {
                 if(selected[2] == 0) {
                     splines.get(selected[1]).startPose.setPoint2d(currentPoint.getX(), currentPoint.getY());
                 } else if (selected[2] == 1) {
-                    // turn into non-relative point?
                     Vector2d nonRelative = currentPoint.toVector2d().minus(splines.get(selected[1]).getStartPose().getVector2d());
                     splines.get(selected[1]).firstControl.setXY(nonRelative.getX(), nonRelative.getY());
                 } else if (selected[2] == 2) {
-                    // turn into non-relative point?
                     Vector2d nonRelative = currentPoint.toVector2d().minus(splines.get(selected[1]).getEndPose().getVector2d());
                     splines.get(selected[1]).secondControl.setXY(nonRelative.getX(), nonRelative.getY());
                 } else if(selected[2] == 3) {
@@ -242,6 +248,10 @@ public class PathEditor {
                         } else if(selected[2] == 2 && (selected[1] + 1 < splines.size())) {
                             splines.get(selected[1] + 1).getFirstControl().setDirection(Util.getOppositeAngle(splines.get(selected[1]).getSecondControl().getDirection()));
                         }
+
+                        if(selected[2] == 0) {
+                            splines.get(selected[1] - 1).getEndPose().setPose(splines.get(selected[1]).getStartPose());
+                        }
                     }
                 }
 
@@ -252,6 +262,10 @@ public class PathEditor {
         pathingCanvas.setOnMouseReleased(e -> {
             setSelected(0, 0, 0, 0);
         });
+    }
+
+    public static void clearFile() {
+        file = null;
     }
 
     public static void deleteSpline(int index) {
@@ -299,6 +313,20 @@ public class PathEditor {
                 } else {
                     drawWaypoint(gc, splines.get(i).getStartPose().getPoint2d(), splines.get(i - 1).getSecondControl(), splines.get(i).getFirstControl());
                 }
+            }
+        }
+
+        updateJSON();
+    }
+
+    public static void updateJSON() {
+
+        if(file != null) {
+            try {
+                PathingJson.convertPathToJson(splines, file);
+            } catch (IOException e) {
+                
+                e.printStackTrace();
             }
         }
     }
@@ -385,9 +413,6 @@ public class PathEditor {
             gc.setFill(Color.rgb(255, 71, 83));
         }
         Point2d heading = Util.vectorLerp(topLeftInPixelsRotated.toVector2d(), topRightInPixelsRotated.toVector2d(), .5).toPoint2d();
-        // linear lerp?
-        // Point2d heading = convertToPixels(orientateToCanvas(pose.getPoint2d()));
-        // heading = new Point2d(heading.getX() + (Math.sin(pose.getHeading()) * ((robotSize[0] * pixelPerIn) / 2)), heading.getY() - (Math.cos(pose.getHeading()) * (robotSize[1] * pixelPerIn) / 2));
         drawPoint(gc, heading, controlPointSize - 5);
 
         // Draw Robot Center

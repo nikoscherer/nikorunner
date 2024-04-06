@@ -2,8 +2,8 @@ package GUI;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.json.simple.JSONObject;
+import java.util.ArrayList;
+import org.json.simple.parser.ParseException;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,6 +23,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import nikorunnerlib.src.Geometry.Pose2d;
+import nikorunnerlib.src.Geometry.Vector2d;
 
 public class Menu {
     static Stage window;
@@ -74,7 +76,7 @@ public class Menu {
         pathSeperator.setStroke(Color.rgb(20, 20, 20));
 
         ScrollPane paths = new ScrollPane();
-        // paths.prefWidthProperty().bind(window.widthProperty());
+        paths.minWidthProperty().bind(window.widthProperty());
         paths.setFitToWidth(true);
         paths.setPrefHeight(300);
         pathContent = new HBox();
@@ -82,8 +84,6 @@ public class Menu {
         pathContent.setPadding(new Insets(20, 0, 0, 10));
         pathContent.setSpacing(10);
         pathContent.setPrefSize(window.getWidth(), 250);
-
-        int maxRow = 5;
 
         addPath.setOnAction(e -> {
             String name = "New_Path.json";
@@ -98,18 +98,22 @@ public class Menu {
 
             try {
                 if(newPath.createNewFile()) {
-                    // Write Basic Code
-                    JSONObject jsonFile = new JSONObject();
 
                     updatePathingGUI();
-                    // jsonFile.put("key", 1);
-                    // jsonFile.put("key", 2);
-                    // jsonFile.put("key", 3);
 
-                    // FileWriter writeFile = new FileWriter(newPath.getAbsolutePath());
-                    // writeFile.write(jsonFile.toJSONString());
+                    ArrayList<Spline> newPathSpline = new ArrayList<>();
+                    newPathSpline.add(
+                        // Default
+                        new Spline(
+                            new Pose2d(-12, -18, Math.toRadians(0)),
+                            new Vector2d(10, Math.toRadians(0)),
+                            new Vector2d(10, Math.toRadians(-180)),
+                            new Pose2d(12, 18, Math.toRadians(0))
+                        ));
+
+                    PathingJson.convertPathToJson(newPathSpline, newPath);
                 } else {
-                    System.out.println("auto already exists");
+                    System.out.println("path already exists");
                 }
             } catch (IOException e1) {
                 System.out.println("Unexpected Error - addPath button");
@@ -139,6 +143,8 @@ public class Menu {
 
     static String oldName = null;
 
+
+    // TODO After file is opened, it cannot be renamed nor deleted?
     public static void updatePathingGUI() {
         pathContent.getChildren().clear();
 
@@ -148,7 +154,6 @@ public class Menu {
             File[] pathFiles = f.listFiles();
 
             BorderPane pathBox = new BorderPane();
-            // pathBox.setPadding(new Insets(15, 0, 0, 15));
             pathBox.setPrefSize(310, 200);
             pathBox.setMinSize(310, 200);
             pathBox.getStyleClass().addAll("border-type", "border-color");
@@ -181,6 +186,7 @@ public class Menu {
 
             pathContent.getChildren().add(pathBox);
 
+
             pathName.textProperty().addListener((observable, oldValue, newValue) -> {
                 if(oldName == null) {
                     if(newValue != oldValue) {
@@ -189,12 +195,12 @@ public class Menu {
                 }
             });
 
+
             pathName.setOnKeyPressed(e -> {
                 if(e.getCode() == KeyCode.ENTER) {
                     if(pathName.getText() != "" && pathName.getText() != null && !new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json").isFile()) {
                         File file = new File(Constants.pathDir + oldName + ".json");
                         file.renameTo(new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json"));
-    
                         oldName = null;
                         pathName.getParent().requestFocus();
                     }
@@ -209,7 +215,13 @@ public class Menu {
             });
 
             openPath.setOnAction(e -> {
-                window.setScene(PathEditor.editor);
+                try {
+                    PathEditor.init(window, new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json"));
+                    window.setScene(PathEditor.editor);
+                } catch (IOException | ParseException e1) {
+                    System.out.println("error opening file");
+                    e1.printStackTrace();
+                }
             });
 
 

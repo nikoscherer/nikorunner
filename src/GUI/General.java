@@ -91,10 +91,10 @@ public class General {
 
         menuButton.setOnAction(e -> {
             if(window.getScene() == Menu.menu) {
-                System.out.println("Menu Pressed");
             } else {
-                System.out.println("Went to Menu");
+                PathEditor.clearFile();
                 window.setScene(Menu.menu);
+                Menu.updatePathingGUI();
             }
         });
 

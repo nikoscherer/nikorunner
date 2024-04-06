@@ -1,0 +1,19 @@
+.root {
+    -fx-background-color: #29292C;
+}
+
+.label-border {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15;
+    -fx-padding: 10;
+    -fx-border-color: #222223;
+    -fx-border-width: 3px;
+}
+
+
+
+/* EDITING */
+.editing {
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 2px;
+}
