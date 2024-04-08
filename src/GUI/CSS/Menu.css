@@ -28,7 +28,7 @@
 
 
 .label-type {
-    -fx-background-color: null;
+    -fx-background-color: #27272a;
     -fx-background-radius: 10px;
     -fx-border-color: #2a2a2b;
     -fx-border-width: 3px;
@@ -44,7 +44,7 @@
     -fx-border-radius: 20;
 }
 .button-menuType {
-    -fx-background-color: null;
+    -fx-background-color: #27272a;
     -fx-border-color: #2a2a2a;
     -fx-border-width: 3px;
     -fx-border-radius: 10px;

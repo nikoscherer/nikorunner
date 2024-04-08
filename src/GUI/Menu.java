@@ -131,6 +131,7 @@ public class Menu {
 
         grid.add(path, 0, 0);
 
+        
         VBox topMenu = General.createMenu(window);
 
         root.setTop(topMenu);

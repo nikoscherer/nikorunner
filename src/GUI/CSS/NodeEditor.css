@@ -1,0 +1,50 @@
+.root {
+    -fx-background-color: #29292C;
+}
+
+.node {
+    -fx-background-color: #2c2c2f;
+    -fx-border-color: #222223;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-width: 3px;
+}
+
+.node-header {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 18;
+    -fx-padding: 10, 0, 0, 15;
+}
+
+.node-io-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15;
+    -fx-padding: 5, 5, 5, 5;
+}
+
+.text-field {
+    -fx-text-fill: #FFFFFF;
+
+    -fx-background-color: #3a3a3e;
+
+    -fx-border-color: #222223;
+
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-width: 2px;
+
+    -fx-padding: 0, 0, 0, 10;
+}
+
+
+/* EDITING */
+.editing {
+    -fx-border-color: #FFFFFF;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-width: 2px;
+}
+
+
+.editing-2 {
+    -fx-background-color: #bb21c6;
+}

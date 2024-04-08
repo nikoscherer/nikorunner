@@ -1,5 +1,6 @@
 package GUI;
 
+import GUI.OpenCVNodes.NodeEditor;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -52,10 +53,28 @@ public class General {
         Label menuLabel = new Label("NikoRunner");
 
 
-        Rectangle seperator = new Rectangle(1010, 20);
-        seperator.widthProperty().bind(window.widthProperty().subtract(390));
+        // TODO fix all of this, and redo menus
+        Button nodeEditorButton = new Button("Node Editor (FOR NOW)");
+        nodeEditorButton.setPrefWidth(400);
+        nodeEditorButton.setMaxWidth(400);
+        nodeEditorButton.setPadding(new Insets(0, 0, 0, 20));
+
+        nodeEditorButton.setOnAction(e -> {
+            window.setScene(NodeEditor.nodeEditor);
+        });
+
+        nodeEditorButton.getStyleClass().addAll("button-menu", "button-color");
+
+
+
+        // Normal Width 1010
+        Rectangle seperator = new Rectangle(200, 20);
+        // seperator.widthProperty().bind(window.widthProperty().subtract(390));
         seperator.setFill(Color.TRANSPARENT);
         
+        // - - - - - - - - - - - - - - - - - - -
+
+
         int appSize = 40;
 
         Image minimizeImage = new Image("imgs/minimize.png");
@@ -134,6 +153,9 @@ public class General {
 
 
 
+
+
+
         Line menuLine = new Line();
         menuLine.setStrokeWidth(1);
         menuLine.setStartX(0);
@@ -147,7 +169,7 @@ public class General {
         HBox.setHgrow(menu, Priority.ALWAYS);
         HBox.setHgrow(seperator, Priority.ALWAYS);
 
-        menu.getChildren().addAll(menuButton, labelSeperator, menuLabel, seperator, minimizeApplicationButton, maximizeApplicationButton, closeApplicationButton);
+        menu.getChildren().addAll(menuButton, labelSeperator, menuLabel, nodeEditorButton, seperator, minimizeApplicationButton, maximizeApplicationButton, closeApplicationButton);
         root.getChildren().addAll(menu, menuLine);
 
         menu.getStylesheets().addAll("imgs/WindowMenu.css");

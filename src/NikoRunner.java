@@ -1,16 +1,14 @@
-import GUI.*; 
-
+import GUI.*;
+import GUI.OpenCVNodes.NodeEditor;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-
 public class NikoRunner extends Application  {
-
 
     public static int[] defaultSize = {1400, 800};
 
-
+    
     Stage window;
 
     public static void main(String[] args) {
@@ -31,11 +29,11 @@ public class NikoRunner extends Application  {
         
         Menu.init(window);
         PathEditor.init(window, null);
-        NodeTest.init(window);
+        NodeEditor.init(window);
         
-        // window.setScene(Menu.menu);
+        window.setScene(Menu.menu);
         // window.setScene(PathEditor.editor);
-        window.setScene(NodeTest.nodeTest);
+        // window.setScene(NodeEditor.nodeEditor);
 
         window.show();
     }
