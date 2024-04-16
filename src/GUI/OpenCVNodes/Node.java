@@ -43,7 +43,6 @@ public class Node extends VBox {
 
 
         Label header = new Label(type.getName());
-        System.out.println(type.getName());
         header.getStyleClass().addAll("node-header");
 
 
@@ -94,11 +93,8 @@ public class Node extends VBox {
 
                 for(int i = 0; i < ioPoints.size(); i++) {
                     difference = new Point2d(ioPoints.get(i).getX() - e.getX(), ioPoints.get(i).getY() - e.getY());
-                    System.out.println("(" + difference.getX() + "," + difference.getY() + ")");
 
-                    if(inRange(difference, 10)) {
-                        System.out.println("grabbed Node");
-                    } else {
+                    if(!inRange(difference, 10)) {
                         difference = null;
                     }
                 }
@@ -148,8 +144,6 @@ public class Node extends VBox {
                     nodeConnector.getLayoutX(), 
                     nodeConnector.getLayoutY()
             ));
-            System.out.println("Location");
-            System.out.println("(" + ioPoints.get(ioPoints.size() - 1).getX() + ", " + ioPoints.get(ioPoints.size() - 1).getY() + ")");
         } else {
             if(type == NodeIO.TEXT) {
                 TextField IOText = new TextField();

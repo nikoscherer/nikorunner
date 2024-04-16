@@ -58,7 +58,6 @@ public class NodeEditor {
         nodes.getChildren().addAll(nodePane);
 
         Canvas nodeCanvas = new Canvas(nodePane.getWidth(), nodePane.getHeight());
-        System.out.println(nodeCanvas.getWidth());
         GraphicsContext gc = nodeCanvas.getGraphicsContext2D();
         gc.setStroke(Color.rgb(0, 0, 0));
         gc.setLineWidth(3);

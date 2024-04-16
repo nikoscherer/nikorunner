@@ -24,7 +24,11 @@ import nikorunnerlib.src.Geometry.Pose2d;
 import nikorunnerlib.src.Geometry.Vector2d;
 import nikorunnerlib.src.Other.Util;
 
-// Might be better to have it non static
+
+// TODO when path has greater than 2 splines, and you delete a spline it moves the control points randomly
+// TODO when path has greater than 2 splines and last splines start control point is deleted, error is given.
+
+// TODO when user returns to menu, sometimes they cannot rename or delete the path that was previously opened.
 public class PathEditor {
     
     static Stage window;
@@ -63,7 +67,7 @@ public class PathEditor {
 
     static File file;
 
-    public static void init(Stage primaryStage, File pathFile) throws FileNotFoundException, IOException, ParseException {
+    public static void init(Stage primaryStage, File pathFile)  {
         window = primaryStage;
         file = pathFile;
 
@@ -125,7 +129,12 @@ public class PathEditor {
         // PATHING
 
         if(!(pathFile == null)) {
-            splines = PathingJson.convertToPath(pathFile);
+            try {
+                splines = PathingJson.convertToPath(pathFile);
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
+                System.err.println("Path file does not exist");
+            }
         } else {
             // Field Relative
             Pose2d defaultStartPose = new Pose2d(-12, -18, Math.toRadians(0));
@@ -165,6 +174,10 @@ public class PathEditor {
                         Point2d secondControlDifference = relateTo(splines.get(i).getEndPose().getPoint2d(), splines.get(i).getSecondControl()).toVector2d().minus(fieldRelativeCursor.toVector2d()).toPoint2d();
                         Point2d endPoseHeadingDifference = fieldRelativeCursor.toVector2d().minus(getHeading(splines.get(i).getEndPose(), gc).toVector2d()).toPoint2d();
                         Point2d endPoseDifference = fieldRelativeCursor.toVector2d().minus(splines.get(i).getEndPose().getVector2d()).toPoint2d();
+
+                        System.out.println(startPoseHeadingDifference.toVector2d().getMagnitude());
+                        System.out.println(getHeading(splines.get(i).getStartPose(), gc).getX());
+                        System.out.println(getHeading(splines.get(i).getStartPose(), gc).getY());
 
                         if(inRange(startPoseDifference, (robotPointSize - 5) / pixelPerIn)) {
                             setSelected(1, i, 0, 0);
@@ -263,11 +276,7 @@ public class PathEditor {
             setSelected(0, 0, 0, 0);
         });
     }
-
-    public static void clearFile() {
-        file = null;
-    }
-
+    
     public static void deleteSpline(int index) {
 
         if(index != 0 && splines.size() != 2) {
