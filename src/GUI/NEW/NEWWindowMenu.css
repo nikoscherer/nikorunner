@@ -1,0 +1,31 @@
+.app-menu {
+  -fx-background-color: #1b1b1b;
+}
+
+.label-app {
+    -fx-font-size: 20;
+    -fx-text-fill: #FFFFFF;
+}
+
+.button-control {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 17.5px;
+}
+.button-control:hover {
+    -fx-background-color: #222222;
+}
+
+.button-close {
+    -fx-background-color: transparent;
+}
+.button-close:hover {
+    -fx-background-color: #b82d2d;
+}
+
+
+/* Editing */
+.editing {
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 3px;
+}

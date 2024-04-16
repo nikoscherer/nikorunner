@@ -216,13 +216,8 @@ public class Menu {
             });
 
             openPath.setOnAction(e -> {
-                try {
-                    PathEditor.init(window, new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json"));
-                    window.setScene(PathEditor.editor);
-                } catch (IOException | ParseException e1) {
-                    System.out.println("error opening file");
-                    e1.printStackTrace();
-                }
+                PathEditor.init(window, new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json"));
+                window.setScene(PathEditor.editor);
             });
 
 

@@ -1,0 +1,68 @@
+.root {
+    -fx-background-color: #1f1f1f;
+    -fx-border-color: #2c2c2c;
+    -fx-border-width: 3px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 5px;
+}
+
+.editor {
+    -fx-background-color: #1b1b1b;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+}
+
+.label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 30;
+}
+
+
+
+.pathing-text {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15;
+}
+.pathing-text:focus {
+    -fx-border-color: #FFFFFF;
+    -fx-border-radius: 5px;
+    -fx-border-width: 2px;
+}
+
+.pathing-box {
+    -fx-background-color: #212121;
+    -fx-background-radius: 10;
+}
+
+
+.pathing-new {
+    -fx-background-color: #252526;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15;
+    -fx-background-radius: 10px;
+}
+.pathing-new:hover {
+    -fx-background-color: #2f2f31;
+}
+
+.pathing-trash {
+    -fx-background-color: #272727;
+}
+.pathing-trash:hover {
+    -fx-background-color: #2c2c2c;
+}
+
+.pathing-open {
+    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 5px;
+}
+.pathing-open:hover {
+    -fx-background-color: #303030;
+}
+
+.editing {
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 3px;
+}

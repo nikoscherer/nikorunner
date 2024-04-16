@@ -1,5 +1,10 @@
 package GUI;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.json.simple.parser.ParseException;
+
 import GUI.OpenCVNodes.NodeEditor;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -110,8 +115,8 @@ public class General {
 
         menuButton.setOnAction(e -> {
             if(window.getScene() == Menu.menu) {
+
             } else {
-                PathEditor.clearFile();
                 window.setScene(Menu.menu);
                 Menu.updatePathingGUI();
             }
@@ -137,8 +142,6 @@ public class General {
         });
 
 
-
-        // Needs to be edited
         menu.setOnMousePressed(e -> {
             xOffset = window.getX() - e.getScreenX();
             yOffset = window.getY() - e.getScreenY();
@@ -150,9 +153,6 @@ public class General {
                 window.setY(e.getScreenY() + yOffset);
             }
         });
-
-
-
 
 
 
@@ -172,7 +172,7 @@ public class General {
         menu.getChildren().addAll(menuButton, labelSeperator, menuLabel, nodeEditorButton, seperator, minimizeApplicationButton, maximizeApplicationButton, closeApplicationButton);
         root.getChildren().addAll(menu, menuLine);
 
-        menu.getStylesheets().addAll("imgs/WindowMenu.css");
+        menu.getStylesheets().addAll("GUI/CSS/WindowMenu.css");
 
         return root;
     }
