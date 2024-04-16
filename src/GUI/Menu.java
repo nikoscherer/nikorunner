@@ -3,25 +3,25 @@ package GUI;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.json.simple.parser.ParseException;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import nikorunnerlib.src.Geometry.Pose2d;
 import nikorunnerlib.src.Geometry.Vector2d;
@@ -31,61 +31,100 @@ public class Menu {
 
     public static Scene menu;
 
-    public static HBox pathContent;
+    static int borderWidth = 5;
 
-    static double xOffset;
-    static double yOffset;
+    static boolean windowScaling = false;
+    static int location = 0;
 
 
-    // Should redo at some point
+
+    static GridPane paths;
+
     public static void init(Stage primaryStage) {
         window = primaryStage;
 
         BorderPane root = new BorderPane();
+        root.setPrefWidth(window.getWidth());
+        root.setPrefHeight(window.getHeight());
 
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(30, 0, 0, 15));
-        grid.setPrefSize(600, 40);
-
-        VBox path = new VBox();
-        path.setPrefSize(window.getWidth(), 500);
+        HBox menuBar = WindowsMenu.createMenu(window);
 
 
-        HBox pathTop = new HBox();
-        pathTop.setPadding(new Insets(0, 0, 0, 30));
-        pathTop.setAlignment(Pos.CENTER_LEFT); 
-        pathTop.setPrefSize(400, 70);
-        pathTop.setMaxSize(400, 70);
-        pathTop.getStyleClass().addAll("border-color", "border-menuType");
-        Label pathLabel = new Label("Paths");
-        pathLabel.getStyleClass().addAll("label-menuType");
-        Rectangle pathSpacer = new Rectangle(225, 40);
-        pathSpacer.setFill(Color.TRANSPARENT);
-        Button addPath = new Button("+");
-        addPath.setPrefSize(30, 30);
-        addPath.getStyleClass().addAll("button-color", "button-menuCreateType");
 
-        pathTop.getChildren().addAll(pathLabel, pathSpacer, addPath);
+        HBox editor = new HBox();
+        editor.setPadding(new Insets(10, 10, 10, 10));
+        editor.setSpacing(20);
+
+
+        // PATH
+        VBox pathEditor = new VBox();
+
+        // TODO make it seperately scalable
+        pathEditor.setPrefWidth(window.getWidth() / 2);
+        VBox.setVgrow(pathEditor, Priority.ALWAYS);
+        pathEditor.getStyleClass().addAll("editor");
+
+        HBox pathEditorTopBar = new HBox();
+        pathEditorTopBar.setPadding(new Insets(15, 17, 0, 20));
+        pathEditorTopBar.setAlignment(Pos.CENTER_LEFT);
+        Label pathEditorLabel = new Label("Paths");
+        Region pathEditorSpacer = new Region();
+        HBox.setHgrow(pathEditorSpacer, Priority.ALWAYS);
+
+        // TODO change to image
+        Button newPath = new Button("+");
+        newPath.setPrefSize(45, 45);
+        newPath.getStyleClass().addAll("pathing-new");
 
         
-        Line pathSeperator = new Line();
-        pathSeperator.setStrokeWidth(4);
-        pathSeperator.setStartX(40);
-        pathSeperator.setEndX(window.getWidth() - 300);
-        pathSeperator.setTranslateY(10); // MIGHT CAUSE ISSUES 
-        pathSeperator.setStroke(Color.rgb(20, 20, 20));
+        paths = new GridPane();
+        paths.setPrefWidth(pathEditor.getPrefWidth());
+        paths.setVgap(10);
+        paths.setHgap(10);
+        paths.setPadding(new Insets(10, 10, 10, 10));
 
-        ScrollPane paths = new ScrollPane();
-        paths.minWidthProperty().bind(window.widthProperty());
-        paths.setFitToWidth(true);
-        paths.setPrefHeight(300);
-        pathContent = new HBox();
-        pathContent.setAlignment(Pos.CENTER_LEFT);  
-        pathContent.setPadding(new Insets(20, 0, 0, 10));
-        pathContent.setSpacing(10);
-        pathContent.setPrefSize(window.getWidth(), 250);
+        pathEditorTopBar.getChildren().addAll(pathEditorLabel, pathEditorSpacer, newPath);
+        pathEditor.getChildren().addAll(pathEditorTopBar, paths);
 
-        addPath.setOnAction(e -> {
+
+        // AUTO
+        VBox autoEditor = new VBox();
+        autoEditor.setPrefWidth(window.getWidth() / 2);
+        VBox.setVgrow(autoEditor, Priority.ALWAYS);
+        autoEditor.getStyleClass().addAll("editor");
+
+        Label autoEditorLabel = new Label("Autos");
+        autoEditorLabel.setPadding(new Insets(5, 0, 0, 10));
+        
+        autoEditor.getChildren().addAll(autoEditorLabel);
+
+
+        editor.getChildren().addAll(pathEditor, autoEditor);
+
+        updateGUI();
+
+        root.setTop(menuBar);
+        root.setCenter(editor);
+        menu = new Scene(root, window.getWidth(), window.getHeight());
+        menu.setFill(Color.TRANSPARENT);
+        menu.getStylesheets().addAll("GUI/CSS/Menu.css");
+
+
+
+        root.widthProperty().addListener(e -> {
+            pathEditor.setPrefWidth(window.getWidth() / 2);
+            pathEditor.setPrefHeight(window.getHeight() / 2);
+            paths.setPrefWidth(pathEditor.getPrefWidth());
+
+            autoEditor.setPrefWidth(window.getWidth() / 2);
+            autoEditor.setPrefHeight(window.getHeight() / 2);
+
+            updateGUI();
+        });
+
+
+        // Used in old GUI, could cause issues
+        newPath.setOnAction(e -> {
             String name = "New_Path.json";
 
             String add = "New_";
@@ -94,12 +133,12 @@ public class Menu {
                 name = add + name;
             }
 
-            File newPath = new File(Constants.pathDir + name);
+            File newPathFile = new File(Constants.pathDir + name);
 
             try {
-                if(newPath.createNewFile()) {
+                if(newPathFile.createNewFile()) {
 
-                    updatePathingGUI();
+                    updateGUI();
 
                     ArrayList<Spline> newPathSpline = new ArrayList<>();
                     newPathSpline.add(
@@ -111,7 +150,7 @@ public class Menu {
                             new Pose2d(12, 18, Math.toRadians(0))
                         ));
 
-                    PathingJson.convertPathToJson(newPathSpline, newPath);
+                    PathingJson.convertPathToJson(newPathSpline, newPathFile);
                 } else {
                     System.out.println("path already exists");
                 }
@@ -121,127 +160,195 @@ public class Menu {
             }
         });
 
-        
-        updatePathingGUI();
-        
-        paths.setContent(pathContent);
-        path.getChildren().addAll(pathTop, pathSeperator, paths);
 
+        // TODO change cursor when hovering
+        // TODO move to window bar, so it can be used everywhere
+        root.setOnMousePressed(e -> {
+            // if at edge
+            if (e.getSceneX() <= borderWidth || e.getSceneY() <= borderWidth
+                    || e.getSceneX() >= window.getWidth() - borderWidth
+                    || e.getSceneY() >= window.getHeight() - borderWidth) {
+                windowScaling = true;
+                if (e.getSceneX() <= borderWidth && e.getSceneY() <= borderWidth) { // grabbed top left
+                    menu.setCursor(Cursor.NW_RESIZE);
+                    location = 0;
+                } else if (e.getSceneX() >= window.getWidth() - borderWidth && e.getSceneY() <= borderWidth) { // grabbed top right
+                    menu.setCursor(Cursor.NE_RESIZE);
+                    location = 2;
+                } else if (e.getSceneX() >= window.getWidth() - borderWidth
+                        && e.getSceneY() >= window.getHeight() - borderWidth) { // grabbed bottom right
+                    menu.setCursor(Cursor.SE_RESIZE);
+                    location = 4;
+                } else if (e.getSceneX() <= borderWidth && e.getSceneY() >= window.getHeight() - borderWidth) { // grabbed bottom left
+                    menu.setCursor(Cursor.SW_RESIZE);
+                    location = 6;
+                } else if (e.getSceneY() <= borderWidth) { // grabbed top
+                    menu.setCursor(Cursor.N_RESIZE);
+                    location = 1;
+                } else if (e.getSceneX() >= window.getWidth() - borderWidth) { // grabbed right
+                    menu.setCursor(Cursor.E_RESIZE);
+                    location = 3;
+                } else if (e.getSceneY() >= window.getHeight() - borderWidth) { // grabbed bottom
+                    menu.setCursor(Cursor.S_RESIZE);
+                    location = 5;
+                } else if (e.getSceneX() <= borderWidth) { // grabbed left
+                    menu.setCursor(Cursor.W_RESIZE);
+                    location = 7;
+                }
+            }
+        });
 
+        root.setOnMouseReleased(e -> {
+            // set bool to false
+            menu.setCursor(Cursor.DEFAULT);
+            windowScaling = false;
+        });
 
-        grid.add(path, 0, 0);
+        root.setOnMouseDragged(e -> {
+            // if edge grabbed, set bool to true
+            if (windowScaling) {
+                if (location == 0) { // top left
+                    window.setHeight(window.getHeight() - (e.getScreenY() - window.getY()));
+                    window.setY(e.getScreenY());
+                } else if (location == 1) { // top
 
-        
-        VBox topMenu = General.createMenu(window);
+                } else if (location == 2) { // top right
 
-        root.setTop(topMenu);
-        root.setCenter(grid);
-        menu = new Scene(root, window.getWidth(), window.getHeight());
+                } else if (location == 3) { // right
+                    window.setWidth(window.getWidth() + (e.getSceneX() - window.getWidth()));
+                } else if (location == 4) { // bottom right
+                    window.setWidth(window.getWidth() + (e.getSceneX() - window.getWidth()));
+                    window.setHeight(window.getHeight() + (e.getSceneY() - window.getHeight()));
+                } else if (location == 5) { // bottom
+                    window.setHeight(window.getHeight() + (e.getSceneY() - window.getHeight()));
+                } else if (location == 6) { // bottom left
+                    window.setWidth(window.getWidth() - (e.getScreenX() - window.getX()));
+                    window.setX(e.getScreenX());
+                    window.setHeight(window.getHeight() + (e.getSceneY() - window.getHeight()));
+                } else if (location == 7) { // left
+                    window.setWidth(window.getWidth() - (e.getScreenX() - window.getX()));
+                    window.setX(e.getScreenX());
+                }
 
-        menu.getStylesheets().addAll("GUI/CSS/Menu.css");
+                if (window.getWidth() < 200) {
+                    window.setWidth(200);
+                }
+                if (window.getHeight() < 150) {
+                    window.setHeight(150);
+                }
+            }
+        });
     }
 
+
+    static int nodeWidth = 200;
+    static int nodeHeight = 150;
+
+    static void updateGUI() {
+        paths.getChildren().clear();
+
+        File[] pathFiles = new File(Constants.pathDir).listFiles();
+
+        int countPerRow = (int) (paths.getPrefWidth() / (nodeWidth + 20)) - 1;
+
+
+        int column = 0;
+        int row = 0;
+
+        for(int i = 0; i < pathFiles.length; i++) {
+            
+            paths.add(createPath(pathFiles[i]), row, column);
+            row++;
+            if(row > countPerRow) {
+                column++;
+                row = 0;
+            }
+        }
+    }
 
     static String oldName = null;
 
+    static VBox createPath(File pathFile) {
+        VBox root = new VBox();
+        root.getStyleClass().addAll("pathing-box");
+        root.setAlignment(Pos.TOP_CENTER);
 
-    // TODO After file is opened, it cannot be renamed nor deleted?
-    public static void updatePathingGUI() {
-        pathContent.getChildren().clear();
+        root.setPrefSize(nodeWidth, nodeHeight);
 
-        for(int i = 0; i < getFileCount(Constants.pathDir); i++) {
+        HBox topBar = new HBox();
+        topBar.setPadding(new Insets(5, 5, 0, 5));
+        topBar.setAlignment(Pos.CENTER_LEFT);
 
-            File f = new File(Constants.pathDir);
-            File[] pathFiles = f.listFiles();
+        TextField pathName = new TextField(pathFile.getName().replace("_", " ").replace(".json", ""));
+        pathName.setAlignment(Pos.CENTER);
+        pathName.setPadding(new Insets(5, 20, 0, 20));
+        pathName.getStyleClass().addAll("pathing-text");
 
-            BorderPane pathBox = new BorderPane();
-            pathBox.setPrefSize(310, 200);
-            pathBox.setMinSize(310, 200);
-            pathBox.getStyleClass().addAll("border-type", "border-color");
+        Image pathTrashImage = new Image("imgs/trash.png");
+        ImageView pathTrashImageView = new ImageView(pathTrashImage);
+        pathTrashImageView.setFitWidth(15);
+        pathTrashImageView.setFitHeight(16);
+        Button pathTrash = new Button();
+        pathTrash.setGraphic(pathTrashImageView);
+        pathTrash.getStyleClass().addAll("pathing-trash");
 
-            HBox topPanel = new HBox();
-            topPanel.setAlignment(Pos.CENTER_LEFT);
-            topPanel.setPadding(new Insets(15, 0, 0, 15));
-            topPanel.setSpacing(10);
-            topPanel.setPrefSize(300, 50);
-
-            TextField pathName = new TextField(pathFiles[i].getName().replace(".json", "").replace("_", " "));
-            pathName.setMinSize(215, 40);
-            pathName.getStyleClass().addAll("label-type");
-
-            MenuButton pathMenu = new MenuButton();
-            pathMenu.setPrefSize(20, 40);
-            pathMenu.getStyleClass().addAll("button-menuType");
-            MenuItem deletePath = new MenuItem("Delete");
-            deletePath.getStyleClass().addAll("button-pathingMenuOption"); 
-            pathMenu.getItems().addAll(deletePath);
+        topBar.getChildren().addAll(pathName, pathTrash);
 
 
+        StackPane openPathPane = new StackPane();
+        openPathPane.setPadding(new Insets(10, 10, 10, 10));
+        VBox.setVgrow(openPathPane, Priority.ALWAYS);
+        openPathPane.setAlignment(Pos.CENTER);
+        // TODO change to image
+        Button pathOpen = new Button("Open");
+        pathOpen.setPrefSize(nodeWidth, nodeHeight - 20);
+        pathOpen.getStyleClass().addAll("pathing-open");
 
-            Button openPath = new Button("Open");
-            openPath.getStyleClass().addAll("button-color", "button-openType");
 
-            topPanel.getChildren().addAll(pathName, pathMenu);
-            pathBox.setTop(topPanel);
-            pathBox.setCenter(openPath);
+        openPathPane.getChildren().addAll(pathOpen);
 
-            pathContent.getChildren().add(pathBox);
+        root.getChildren().addAll(topBar, openPathPane);
 
-
-            pathName.textProperty().addListener((observable, oldValue, newValue) -> {
-                if(oldName == null) {
-                    if(newValue != oldValue) {
-                        oldName = oldValue.replace(" ", "_");
-                    }
+        pathName.textProperty().addListener((obs, oldValue, newValue) -> {
+            if(oldName == null) {
+                if(newValue != oldValue) {
+                    oldName = oldValue.replace(" ", "_") + ".json";
                 }
-            });
-
-
-            pathName.setOnKeyPressed(e -> {
-                if(e.getCode() == KeyCode.ENTER) {
-                    if(pathName.getText() != "" && pathName.getText() != null && !new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json").isFile()) {
-                        File file = new File(Constants.pathDir + oldName + ".json");
-                        file.renameTo(new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json"));
-                        oldName = null;
-                        pathName.getParent().requestFocus();
-                    }
-                } else if (e.getCode() == KeyCode.ESCAPE) {
-                    if(oldName != null) {
-                        pathName.setText(oldName);
-                        oldName = null;
-                    }
-
-                    pathName.getParent().requestFocus();
-                }
-            });
-
-            openPath.setOnAction(e -> {
-                PathEditor.init(window, new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json"));
-                window.setScene(PathEditor.editor);
-            });
-
-
-            deletePath.setOnAction(e -> {
-                File file = new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json");
-                file.delete();
-                updatePathingGUI();
-            });
-        }
-    }
-
-
-    public static int getFileCount(String dirPath) {
-        int count = 0;
-
-        File f = new File(dirPath);
-        File[] files = f.listFiles();
-
-        if (files != null) {
-            for (int i = 0; i < files.length; i++) {
-                count++;
             }
-        }
+        });
 
-        return count;
+        pathName.setOnKeyPressed(e -> {
+            if(e.getCode() == KeyCode.ENTER) {
+                File oldFile = new File(Constants.pathDir + oldName);
+                if(!new File(Constants.pathDir + pathName.getText().replace(" ", "_").replace(".json", "") + ".json").isFile()) {
+                    oldFile.renameTo(new File(Constants.pathDir + pathName.getText().replace(" ", "_").replace(".json", "") + ".json"));
+                    oldName = null;
+                    pathName.getParent().requestFocus();
+                } else {
+                    System.out.println("file already exists");
+                }
+            } else if (e.getCode() == KeyCode.ESCAPE) {
+                pathName.setText(oldName.replace("_", " ").replace(".json", ""));
+                oldName = null;
+                pathName.getParent().requestFocus();
+            }
+        });
+
+
+        pathOpen.setOnAction(e -> {
+            PathEditor.init(window, new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json"));
+            window.setScene(PathEditor.editor);
+        });
+
+
+        pathTrash.setOnAction(e -> {
+            File targetFile = new File(Constants.pathDir + pathName.getText().replace(" ", "_") + ".json");
+            targetFile.delete();
+
+            updateGUI();
+        });
+
+
+        return root;
     }
 }

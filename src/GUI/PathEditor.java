@@ -1,20 +1,30 @@
 package GUI;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.Scrollable;
 
 import org.json.simple.parser.ParseException;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -24,11 +34,12 @@ import nikorunnerlib.src.Geometry.Pose2d;
 import nikorunnerlib.src.Geometry.Vector2d;
 import nikorunnerlib.src.Other.Util;
 
+// DID NOT CHANGE PATHING CODE, ONLY GUI
 
 // TODO when path has greater than 2 splines, and you delete a spline it moves the control points randomly
 // TODO when path has greater than 2 splines and last splines start control point is deleted, error is given.
 
-// TODO when user returns to menu, sometimes they cannot rename or delete the path that was previously opened.
+// TODO when user returns to editor, sometimes they cannot rename or delete the path that was previously opened.
 public class PathEditor {
     
     static Stage window;
@@ -67,6 +78,14 @@ public class PathEditor {
 
     static File file;
 
+
+
+    // window settings
+    static int borderWidth = 5;
+
+    static boolean windowScaling = false;
+    static int location = 0;
+
     public static void init(Stage primaryStage, File pathFile)  {
         window = primaryStage;
         file = pathFile;
@@ -77,53 +96,173 @@ public class PathEditor {
         BorderPane root = new BorderPane();
 
         VBox sideMenu = new VBox();
-        sideMenu.setPadding(new Insets(10, 5, 0, 5));
-        sideMenu.setSpacing(15);
-        sideMenu.setPrefSize(650, 0);
-        sideMenu.getStyleClass().addAll("border-fullMenu");
+        sideMenu.setPrefWidth(500);
+        VBox.setVgrow(sideMenu, Priority.ALWAYS);
+        sideMenu.getStyleClass().addAll("sideMenu");
 
-        VBox waypointsMenu = new VBox();
-        waypointsMenu.setPrefSize(500, 75);
-        waypointsMenu.getStyleClass().addAll("border-color", "border-menu");
-        Label waypointsLabel = new Label("Waypoints");
-        waypointsLabel.setPadding(new Insets(0, 0, 0, 15));
-        waypointsLabel.setPrefSize(200, 60);
-        waypointsLabel.getStyleClass().addAll("label-menu");
+        sideMenu.setPadding(new Insets(10, 10, 10, 10));
 
-        waypointsMenu.getChildren().addAll(waypointsLabel);
-        sideMenu.getChildren().addAll(waypointsMenu);
+        HBox sideMenuBar = new HBox();
+        sideMenuBar.setAlignment(Pos.CENTER_LEFT);
+        sideMenuBar.setSpacing(10);
+        // sideMenuBar.getStyleClass().addAll("editing");
+
+        Image backImage = new Image("imgs/back.png");
+        ImageView backImageView = new ImageView(backImage);
+        backImageView.setFitWidth(25);
+        backImageView.setFitHeight(25);
+        Button backButton = new Button();
+        backButton.setGraphic(backImageView);
+        backButton.getStyleClass().addAll("button-back");
+
+        Label pathName = new Label("Unknown Path");
+        if(pathFile != null) {
+            pathName.setText(pathFile.getName().replace("_", " ").replace(".json", ""));
+        }
+        pathName.getStyleClass().addAll("label-pathName");
+
+        sideMenuBar.getChildren().addAll(backButton, pathName);
+
+        // TODO make scrollbar invisible
+        // TODO make scrollable look nicer
+        // ScrollPane testScrollable = new ScrollPane();
+        // testScrollable.getStyleClass().addAll("waypoint-scrollable");
+        // VBox.setVgrow(testScrollable, Priority.ALWAYS);
+        // HBox.setHgrow(testScrollable, Priority.ALWAYS);
+        // VBox scrollableContent = new VBox();
+        // scrollableContent.getStyleClass().addAll("waypoint-scrollable");
+        // VBox.setVgrow(scrollableContent, Priority.ALWAYS);
+        // HBox.setHgrow(scrollableContent, Priority.ALWAYS);
+        // scrollableContent.setAlignment(Pos.TOP_CENTER);
+        // scrollableContent.setSpacing(10);
+
+        HBox waypointBox = new HBox();
+        HBox.setHgrow(waypointBox, Priority.ALWAYS);
+        waypointBox.setPadding(new Insets(10, 10, 0, 10));
+        waypointBox.setSpacing(10);
+        waypointBox.getStyleClass().addAll("waypoint-box");
+        HBox waypointXBox = new HBox();
+        
+        Label waypointXLabel = new Label("X: ");
+        Label waypointYLabel = new Label("Y: ");
+
+        // waypointX.getStyleClass().addAll("waypoint-label");
+        // waypointY.getStyleClass().addAll("waypoint-label");
+
+        // waypointBox.getChildren().addAll(waypointX, waypointY);
+
+        // scrollableContent.getChildren().addAll(waypointBox);
+
+        // testScrollable.setContent(scrollableContent);
+
+        sideMenu.getChildren().addAll(sideMenuBar, waypointBox);
+
+
+
 
 
         StackPane pathing = new StackPane();
         Canvas pathingCanvas = new Canvas(size, size);
         GraphicsContext gc = pathingCanvas.getGraphicsContext2D();
 
-        // TODO When resizing, it depends on if fullscreened before opening a path?
-        window.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-            size = size + (int) ((newHeight.intValue() - oldHeight.intValue()) * (double) (1 + 7/8));
-            waypointsMenu.setPrefHeight(waypointsMenu.getWidth() + size);
-            pathingCanvas.setWidth(size);
-            pathingCanvas.setHeight(size);
-            pixelPerIn = (double) (size / 144.0);
-            redrawPath(gc);
-        });
-
-        window.widthProperty().addListener((obs, oldWidth, newWidth) -> {
-            waypointsMenu.setPrefWidth(waypointsMenu.getWidth() + ((newWidth.intValue() - oldWidth.intValue()) / 8));
-            waypointsMenu.setMinWidth(waypointsMenu.getWidth() + ((newWidth.intValue() - oldWidth.intValue()) / 8));
-        });
-
 
         gc.drawImage(centerstage, 0, 0);
         pathing.getChildren().addAll(pathingCanvas);
 
 
-        root.setTop(General.createMenu(primaryStage));
-        root.setRight(sideMenu);
+        root.setTop(WindowsMenu.createMenu(primaryStage));
         root.setCenter(pathing);
+        root.setLeft(sideMenu);
 
         editor = new Scene(root, window.getWidth(), window.getHeight());
+        editor.setFill(Color.TRANSPARENT);
         editor.getStylesheets().add("GUI/CSS/PathEditor.css");
+
+
+
+
+        backButton.setOnAction(e -> {
+            window.setScene(Menu.menu);
+            init(window, null);
+        });
+
+        // TODO change cursor when hovering
+        // TODO move to window bar, so it can be used everywhere
+        root.setOnMousePressed(e -> {
+            // if at edge
+            if (e.getSceneX() <= borderWidth || e.getSceneY() <= borderWidth
+                    || e.getSceneX() >= window.getWidth() - borderWidth
+                    || e.getSceneY() >= window.getHeight() - borderWidth) {
+                windowScaling = true;
+                if (e.getSceneX() <= borderWidth && e.getSceneY() <= borderWidth) { // grabbed top left
+                    editor.setCursor(Cursor.NW_RESIZE);
+                    location = 0;
+                } else if (e.getSceneX() >= window.getWidth() - borderWidth && e.getSceneY() <= borderWidth) { // grabbed top right
+                    editor.setCursor(Cursor.NE_RESIZE);
+                    location = 2;
+                } else if (e.getSceneX() >= window.getWidth() - borderWidth
+                        && e.getSceneY() >= window.getHeight() - borderWidth) { // grabbed bottom right
+                    editor.setCursor(Cursor.SE_RESIZE);
+                    location = 4;
+                } else if (e.getSceneX() <= borderWidth && e.getSceneY() >= window.getHeight() - borderWidth) { // grabbed bottom left
+                    editor.setCursor(Cursor.SW_RESIZE);
+                    location = 6;
+                } else if (e.getSceneY() <= borderWidth) { // grabbed top
+                    editor.setCursor(Cursor.N_RESIZE);
+                    location = 1;
+                } else if (e.getSceneX() >= window.getWidth() - borderWidth) { // grabbed right
+                    editor.setCursor(Cursor.E_RESIZE);
+                    location = 3;
+                } else if (e.getSceneY() >= window.getHeight() - borderWidth) { // grabbed bottom
+                    editor.setCursor(Cursor.S_RESIZE);
+                    location = 5;
+                } else if (e.getSceneX() <= borderWidth) { // grabbed left
+                    editor.setCursor(Cursor.W_RESIZE);
+                    location = 7;
+                }
+            }
+        });
+
+        root.setOnMouseReleased(e -> {
+            // set bool to false
+            editor.setCursor(Cursor.DEFAULT);
+            windowScaling = false;
+        });
+
+        root.setOnMouseDragged(e -> {
+            // if edge grabbed, set bool to true
+            if (windowScaling) {
+                if (location == 0) { // top left
+                    window.setHeight(window.getHeight() - (e.getScreenY() - window.getY()));
+                    window.setY(e.getScreenY());
+                } else if (location == 1) { // top
+
+                } else if (location == 2) { // top right
+
+                } else if (location == 3) { // right
+                    window.setWidth(window.getWidth() + (e.getSceneX() - window.getWidth()));
+                } else if (location == 4) { // bottom right
+                    window.setWidth(window.getWidth() + (e.getSceneX() - window.getWidth()));
+                    window.setHeight(window.getHeight() + (e.getSceneY() - window.getHeight()));
+                } else if (location == 5) { // bottom
+                    window.setHeight(window.getHeight() + (e.getSceneY() - window.getHeight()));
+                } else if (location == 6) { // bottom left
+                    window.setWidth(window.getWidth() - (e.getScreenX() - window.getX()));
+                    window.setX(e.getScreenX());
+                    window.setHeight(window.getHeight() + (e.getSceneY() - window.getHeight()));
+                } else if (location == 7) { // left
+                    window.setWidth(window.getWidth() - (e.getScreenX() - window.getX()));
+                    window.setX(e.getScreenX());
+                }
+
+                if (window.getWidth() < 200) {
+                    window.setWidth(200);
+                }
+                if (window.getHeight() < 150) {
+                    window.setHeight(150);
+                }
+            }
+        });
 
 
         // PATHING

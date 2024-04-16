@@ -2,7 +2,7 @@ package GUI.OpenCVNodes;
 
 import java.util.ArrayList;
 
-import GUI.General;
+import GUI.WindowsMenu;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -10,9 +10,9 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -66,7 +66,7 @@ public class NodeEditor {
         // add canvas to screen
         nodes.getChildren().addAll(nodeCanvas);
 
-        VBox topMenu = General.createMenu(window);
+        HBox topMenu = WindowsMenu.createMenu(window);
         root.setTop(topMenu);
         root.setCenter(nodes);
         nodeEditor = new Scene(root, window.getWidth(), window.getHeight());

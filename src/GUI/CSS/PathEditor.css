@@ -6,51 +6,45 @@
     -fx-background-radius: 5px;
 }
 
-/* Menu Bar */
-.border-fullMenu {
+.sideMenu {
     -fx-background-color: #212121;
 }
-.border-menu {
-    -fx-background-radius: 22;
 
-    -fx-border-width: 3px;
-    -fx-border-radius: 20;
+.button-back {
+    -fx-background-color: transparent;
 }
-
-.label-menu {
-    -fx-text-fill: #d9d9d9;
-    -fx-font-size: 15pt;
-}
-
-
-/* Basic */
-.background-color {
+.button-back:hover {
     -fx-background-color: #292929;
 }
-.border-color {
-    -fx-border-color: #222223;
+
+.scrollable {
+    -fx-background-color: #181818;
+    -fx-background-radius: 10px;
+}
+
+.label-pathName {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20;
+}
+
+.waypoint-scrollable {
+    -fx-background-color: #1e1e1e;
+}
+
+.waypoint-box {
+    -fx-background-color: #303030;
+    -fx-background-radius: 5px;
+}
+
+.waypoint-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15;
 }
 
 
-.button-color {
-    -fx-background-color: #242427;
-    -fx-border-color: #222223;
-}
-.button-color:hover {
-    -fx-background-color: #313135;
-}
 
 
-
-/* EDITING */
 .editing {
     -fx-border-color: #FFFFFF;
-    -fx-border-width: 2px;
-}
-
-
-
-/* Color TESTING */
-.testing-color {
-    -fx-background-color: rgb(255, 71, 83);
+    -fx-border-width: 3px;
 }

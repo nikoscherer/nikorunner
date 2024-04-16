@@ -1,5 +1,6 @@
+import java.io.File;
+
 import GUI.*;
-import GUI.NEW.NEWMenu;
 import GUI.OpenCVNodes.NodeEditor;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -29,14 +30,12 @@ public class NikoRunner extends Application  {
         window.initStyle(StageStyle.TRANSPARENT);
         
         Menu.init(window);
-        PathEditor.init(window, null);
-        NEWPathEditor.init(window, null);
+        PathEditor.init(window, new File(Constants.pathDir + "New_Path.json"));
         NodeEditor.init(window);
-        NEWMenu.init(window);
+
         
         // window.setScene(Menu.menu);
-        window.setScene(NEWMenu.menu);
-        // window.setScene(NEWPathEditor.editor);
+        window.setScene(PathEditor.editor);
         // window.setScene(NodeEditor.nodeEditor);
 
         window.show();

@@ -1,4 +1,4 @@
-package GUI.NEW;
+package GUI;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,7 +12,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-public class NEWWindowBar {
+public class WindowsMenu {
 
     static Stage window;
 
@@ -125,7 +125,7 @@ public class NEWWindowBar {
 
         
 
-        menu.getStylesheets().addAll("GUI/NEW/NewWindowMenu.css");
+        menu.getStylesheets().addAll("GUI/CSS/WindowsMenu.css");
 
         return menu;
     }
