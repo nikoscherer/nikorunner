@@ -27,21 +27,50 @@
     -fx-font-size: 20;
 }
 
-.waypoint-scrollable {
-    -fx-background-color: #1e1e1e;
+
+
+.waypoints-box {
+    -fx-background-color: #282828;
+    -fx-background-radius: 7px;
 }
 
-.waypoint-box {
-    -fx-background-color: #303030;
+.waypoints-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20;
+}
+
+
+.waypoint-coord-box {
+    -fx-background-color: #212121;
     -fx-background-radius: 5px;
+}
+
+.waypoint-coord-label {
+    -fx-background-color: #212121;
+    
+    /* -fx-border-color: #FFFFFF;
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px; */
+
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 12;
+}
+
+.waypoint-coord-textfield {
+    -fx-background-color: #212121;
+    -fx-background-radius: 3px;
+
+    -fx-border-color: #8b8b8b;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+
+    -fx-text-fill: #FFFFFF;
 }
 
 .waypoint-label {
     -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15;
+    -fx-font-size: 16;
 }
-
-
 
 
 .editing {

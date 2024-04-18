@@ -19,6 +19,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -95,12 +96,49 @@ public class PathEditor {
 
         BorderPane root = new BorderPane();
 
+        Label pathName = new Label("Unknown Path");
+        pathName.getStyleClass().addAll("label-pathName");
+
+        if(pathFile != null) {
+            pathName.setText(pathFile.getName().replace("_", " ").replace(".json", ""));
+
+            // Field Relative
+            Pose2d defaultStartPose = new Pose2d(-12, -18, Math.toRadians(0));
+            Pose2d defaultEndPose = new Pose2d(12, 18, Math.toRadians(0));
+            
+            // Off of poses
+            Vector2d defaultFirstControl = new Vector2d(10, Math.toRadians(90));
+            Vector2d defaultSecondControl = new Vector2d(10, Math.toRadians(-90));
+            
+            splines.add(new Spline(defaultStartPose, defaultFirstControl, defaultSecondControl, defaultEndPose));
+        } else {
+            try {
+                splines = PathingJson.convertToPath(pathFile);
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
+                System.err.println("Path file does not exist");
+            }
+
+        }
+
+        StackPane pathing = new StackPane();
+        Canvas pathingCanvas = new Canvas(size, size);
+        GraphicsContext gc = pathingCanvas.getGraphicsContext2D();
+
+        gc.drawImage(centerstage, 0, 0);
+        pathing.getChildren().addAll(pathingCanvas);
+
+        redrawPath(gc);
+
+
+
         VBox sideMenu = new VBox();
         sideMenu.setPrefWidth(500);
         VBox.setVgrow(sideMenu, Priority.ALWAYS);
         sideMenu.getStyleClass().addAll("sideMenu");
 
         sideMenu.setPadding(new Insets(10, 10, 10, 10));
+        sideMenu.setSpacing(10);
 
         HBox sideMenuBar = new HBox();
         sideMenuBar.setAlignment(Pos.CENTER_LEFT);
@@ -115,59 +153,78 @@ public class PathEditor {
         backButton.setGraphic(backImageView);
         backButton.getStyleClass().addAll("button-back");
 
-        Label pathName = new Label("Unknown Path");
-        if(pathFile != null) {
-            pathName.setText(pathFile.getName().replace("_", " ").replace(".json", ""));
-        }
-        pathName.getStyleClass().addAll("label-pathName");
-
         sideMenuBar.getChildren().addAll(backButton, pathName);
 
-        // TODO make scrollbar invisible
-        // TODO make scrollable look nicer
-        // ScrollPane testScrollable = new ScrollPane();
-        // testScrollable.getStyleClass().addAll("waypoint-scrollable");
-        // VBox.setVgrow(testScrollable, Priority.ALWAYS);
-        // HBox.setHgrow(testScrollable, Priority.ALWAYS);
-        // VBox scrollableContent = new VBox();
-        // scrollableContent.getStyleClass().addAll("waypoint-scrollable");
-        // VBox.setVgrow(scrollableContent, Priority.ALWAYS);
-        // HBox.setHgrow(scrollableContent, Priority.ALWAYS);
-        // scrollableContent.setAlignment(Pos.TOP_CENTER);
-        // scrollableContent.setSpacing(10);
 
-        HBox waypointBox = new HBox();
-        HBox.setHgrow(waypointBox, Priority.ALWAYS);
-        waypointBox.setPadding(new Insets(10, 10, 0, 10));
-        waypointBox.setSpacing(10);
-        waypointBox.getStyleClass().addAll("waypoint-box");
-        HBox waypointXBox = new HBox();
+
+        VBox waypointsBox = new VBox();
+        HBox.setHgrow(waypointsBox, Priority.ALWAYS);
+        waypointsBox.setPadding(new Insets(10, 10, 10, 10));
+        waypointsBox.setSpacing(10);
+        waypointsBox.setAlignment(Pos.CENTER_LEFT);
+        waypointsBox.getStyleClass().addAll("waypoints-box");
+
+        Label waypointsLabel = new Label("Waypoints");
+        waypointsLabel.setPadding(new Insets(1, 5, 1, 5));
+        waypointsLabel.getStyleClass().addAll("waypoints-label");
+
+
+        // waypoint
+
+        // x coordinate
+        // y coordinate
+        // control magnitudes
+        // control direction
+
+        // waypoint test
+        VBox waypointBox = new VBox();
+        waypointBox.setSpacing(6);
+        waypointBox.setPadding(new Insets(5, 5, 5, 5));
+        waypointBox.getStyleClass().addAll("waypoint-coord-box");
+
+        Label waypoint1Label = new Label("Waypoint 1");
+        waypoint1Label.setPadding(new Insets(5, 5, 5, 10));
+        waypoint1Label.getStyleClass().addAll("waypoint-label");
+
+        HBox waypoint1Coordinates = new HBox();
+        waypoint1Coordinates.setSpacing(10);
+        waypoint1Coordinates.setPadding(new Insets(5, 5, 5, 5));
+        waypoint1Coordinates.setAlignment(Pos.CENTER);
+        waypoint1Coordinates.getStyleClass().addAll("waypoint-coord-box");
+
+        StackPane waypointXPane = new StackPane();
+        Label waypointXLabel = new Label("X Position (in):");
+        waypointXLabel.setPadding(new Insets(5, 5, 5, 5));
+        waypointXLabel.setTranslateX(-20);
+        waypointXLabel.setTranslateY(-12 - (10 - 2));
+        waypointXLabel.getStyleClass().addAll("waypoint-coord-label");
+        TextField waypointX = new TextField("0");
+        waypointX.setPadding(new Insets(10, 10, 10, 10));
+        waypointX.getStyleClass().addAll("waypoint-coord-textfield");
+
+        StackPane waypointYPane = new StackPane();
+        Label waypointYLabel = new Label("Y Position (in):");
+        waypointYLabel.setPadding(new Insets(5, 5, 5, 5));
+        waypointYLabel.setTranslateX(-20);
+        waypointYLabel.setTranslateY(-12 - (10 - 2));
+        waypointYLabel.getStyleClass().addAll("waypoint-coord-label");
+        TextField waypointY = new TextField("0");
+        waypointY.setPadding(new Insets(10, 10, 10, 10));
+        waypointY.getStyleClass().addAll("waypoint-coord-textfield");
+
+        waypointXPane.getChildren().addAll(waypointX, waypointXLabel);
+        waypointYPane.getChildren().addAll(waypointY, waypointYLabel);
+
+        waypoint1Coordinates.getChildren().addAll(waypointXPane, waypointYPane);
+
+
+        waypointBox.getChildren().addAll(waypoint1Label, waypoint1Coordinates);
+
+        waypointsBox.getChildren().addAll(waypointsLabel, waypointBox);
+
+
+        sideMenu.getChildren().addAll(sideMenuBar, waypointsBox);
         
-        Label waypointXLabel = new Label("X: ");
-        Label waypointYLabel = new Label("Y: ");
-
-        // waypointX.getStyleClass().addAll("waypoint-label");
-        // waypointY.getStyleClass().addAll("waypoint-label");
-
-        // waypointBox.getChildren().addAll(waypointX, waypointY);
-
-        // scrollableContent.getChildren().addAll(waypointBox);
-
-        // testScrollable.setContent(scrollableContent);
-
-        sideMenu.getChildren().addAll(sideMenuBar, waypointBox);
-
-
-
-
-
-        StackPane pathing = new StackPane();
-        Canvas pathingCanvas = new Canvas(size, size);
-        GraphicsContext gc = pathingCanvas.getGraphicsContext2D();
-
-
-        gc.drawImage(centerstage, 0, 0);
-        pathing.getChildren().addAll(pathingCanvas);
 
 
         root.setTop(WindowsMenu.createMenu(primaryStage));
@@ -263,31 +320,6 @@ public class PathEditor {
                 }
             }
         });
-
-
-        // PATHING
-
-        if(!(pathFile == null)) {
-            try {
-                splines = PathingJson.convertToPath(pathFile);
-            } catch (IOException | ParseException e) {
-                e.printStackTrace();
-                System.err.println("Path file does not exist");
-            }
-        } else {
-            // Field Relative
-            Pose2d defaultStartPose = new Pose2d(-12, -18, Math.toRadians(0));
-            Pose2d defaultEndPose = new Pose2d(12, 18, Math.toRadians(0));
-
-            // Off of poses
-            Vector2d defaultFirstControl = new Vector2d(10, Math.toRadians(90));
-            Vector2d defaultSecondControl = new Vector2d(10, Math.toRadians(-90));
-
-            splines.add(new Spline(defaultStartPose, defaultFirstControl, defaultSecondControl, defaultEndPose));
-        }
-
-        
-        redrawPath(gc);
 
 
         // on click
