@@ -1,16 +1,14 @@
-import java.io.File;
-
 import GUI.*;
+import GUI.Editors.AutoEditor.AutoEditor;
+import GUI.Editors.PathEditor.PathEditor;
 import GUI.OpenCVNodes.NodeEditor;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 
-public class NikoRunner extends Application  {
+public class NikoRunner extends Application {
 
-    public static int[] defaultSize = {1400, 800};
-
-    
     Stage window;
 
     public static void main(String[] args) {
@@ -21,6 +19,7 @@ public class NikoRunner extends Application  {
     public void start(Stage primaryStage) throws Exception {
         window = primaryStage;
 
+
         window.setTitle("NikoRunner");
 
         window.setWidth(Constants.defaultSize[0]);
@@ -28,15 +27,13 @@ public class NikoRunner extends Application  {
         window.setResizable(true);
 
         window.initStyle(StageStyle.TRANSPARENT);
-        
+
         Menu.init(window);
-        PathEditor.init(window, new File(Constants.pathDir + "New_Path.json"));
+        PathEditor.init(window, null);
+        AutoEditor.init(window, null);
         NodeEditor.init(window);
 
-        
-        // window.setScene(Menu.menu);
-        window.setScene(PathEditor.editor);
-        // window.setScene(NodeEditor.nodeEditor);
+        window.setScene(Menu.menu);
 
         window.show();
     }

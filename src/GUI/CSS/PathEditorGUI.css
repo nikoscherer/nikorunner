@@ -1,0 +1,154 @@
+.root {
+    -fx-background-color: #1f1f1f;
+    -fx-border-color: #2c2c2c;
+    -fx-border-width: 3px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 5px;
+}
+
+.button-option {
+
+}
+
+.button-back {
+    -fx-background-color: transparent;
+}
+
+.button-back:hover {
+    -fx-background-color: #292929;
+}
+
+.sidebar {
+    -fx-background-color: #212121;
+}
+
+.label-pathName {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20;
+}
+
+.sidebar-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20;
+}
+
+.sidebar-option-box {
+    -fx-background-color: #282828;
+    -fx-background-radius: 7px;
+}
+
+.sidebar-selection-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16;
+}
+
+.sidebar-selection-box {
+    -fx-background-color: #212121;
+    -fx-background-radius: 5px;
+}
+
+.button-option {
+    -fx-background-color: #212122;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15;
+    -fx-background-radius: 10px;
+}
+.button-option:hover {
+    -fx-background-color: #2f2f31;
+}
+
+/* WAYPOINT */
+.waypoint-coord-box {
+    -fx-background-color: #212121;
+    -fx-background-radius: 5px;
+}
+
+.waypoint-coord-label {
+    -fx-background-color: #212121;
+    
+    /* -fx-border-color: #FFFFFF;
+    -fx-border-width: 2px;
+    -fx-border-radius: 3px; */
+
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 12;
+}
+
+.waypoint-coord-textfield {
+    -fx-background-color: #212121;
+    -fx-background-radius: 3px;
+
+    -fx-border-color: #8b8b8b;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+
+    -fx-text-fill: #FFFFFF;
+}
+
+.waypoint-control-label {
+    -fx-background-color: #212121;
+
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 8;
+}
+
+
+.waypoint-error {
+    -fx-border-color: #cc2e2e;
+}
+
+
+.commands-menu {
+    -fx-background-color: #212121;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 5px;
+}
+
+.commands-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 8;
+}
+
+.commands-item {
+    -fx-background-color: #1d1d1d;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14;
+}
+
+.commands-group {
+    -fx-background-color: #212121;
+    -fx-border-color: #303030;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 5px;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+
+
+.slider {
+    -fx-pref-width: 350px;
+    -fx-background-color: #1d1d1d;
+    -fx-background-radius: 3px;
+}
+.slider .track {
+    -fx-background-color: #2c2b31;
+    -fx-background-radius: 6px;
+    -fx-border-color: #3e3d3f;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-pref-height: 10px;
+}
+.slider .thumb {
+    -fx-pref-height: 30px;
+    -fx-pref-width: 12px;
+    -fx-background-radius: 3px;
+}
+.slider .axis {
+    -fx-tick-label-fill: #FFFFFF;
+}
+
+
+.editing {
+    -fx-border-color: #FFFFFF;
+    -fx-border-width: 3px;
+}

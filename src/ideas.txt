@@ -1,0 +1,6 @@
+Make path and auto names editable in their respective editors.
+
+
+4,060 LINES OF CODE!!!
+
+(4,275 with node editor)

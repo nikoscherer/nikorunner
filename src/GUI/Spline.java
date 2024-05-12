@@ -11,10 +11,10 @@ public class Spline {
      * End Pose 
      */
     
-    Pose2d startPose;
-    Pose2d endPose;
-    Vector2d firstControl;
-    Vector2d secondControl;
+    public Pose2d startPose;
+    public Pose2d endPose;
+    public Vector2d firstControl;
+    public Vector2d secondControl;
 
     public Spline(Pose2d startPose, Vector2d firstControl, Vector2d secondControl, Pose2d endPose) {
         this.startPose = startPose;
@@ -66,6 +66,16 @@ public class Spline {
         } else if(index == 3) {
             return endPose.getPoint2d();
         }
+        return null;
+    }
+
+    public Point2d getIndexOutside(int index) {
+        if(index == 0) {
+            return startPose.getPoint2d();
+        } else if (index == 1) {
+            return endPose.getPoint2d();
+        }
+
         return null;
     }
 }

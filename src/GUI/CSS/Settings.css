@@ -1,0 +1,52 @@
+.root {
+    -fx-background-color: #1f1f1f;
+    -fx-border-color: #2c2c2c;
+    -fx-border-width: 3px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 5px;
+}
+
+.settings-menu {
+    -fx-background-color: #1b1b1b;
+}
+
+.label-settings {
+    -fx-font-size: 12;
+    -fx-text-fill: #FFFFFF;
+}
+
+.setting-box {
+    -fx-background-color: #2c2c2c;
+    -fx-border-color: #1f1f1f;
+    -fx-border-width: 3px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 4px;
+}
+
+.setting-label {
+    -fx-font-size: 12;
+    -fx-text-fill: #FFFFFF;
+}
+
+.button-control {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 17.5px;
+}
+
+.button-control:hover {
+    -fx-background-color: #222222;
+}
+
+.button-close {
+    -fx-background-color: transparent;
+}
+
+.button-close:hover {
+    -fx-background-color: #b82d2d;
+}
+
+.label-settingslabel {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 30;
+}

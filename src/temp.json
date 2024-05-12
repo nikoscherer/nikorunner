@@ -1,0 +1,16 @@
+{
+    "commands": [
+        {
+            "path": "Sample_Path_A.json",
+            "type": "Pathing Command"
+        },
+        {
+            "path": "Sample_Path_B.json",
+            "type": "Pathing Command"
+        },
+        {
+            "path": "Sample_Path_C.json",
+            "type": "Pathing Command"
+        }
+    ]
+}
